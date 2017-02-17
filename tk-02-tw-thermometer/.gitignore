@@ -1,0 +1,6 @@
+nbproject/**
+.build/**
+**/.hg/**
+.cproject
+.project
+.settings/**
