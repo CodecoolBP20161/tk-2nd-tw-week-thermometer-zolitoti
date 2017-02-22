@@ -7,6 +7,7 @@
 #include "codecool/codecool_shield_names.h"
 #include "codecool/codecool_pot.h"
 #include "temp_modify.h"
+#include "limit_modify.h"
 
 
 #define freq 2000;
@@ -33,7 +34,7 @@ int main() {
 
     while (true) {
 
-        /*if(JOYSTICK_PUSHED){
+        if(JOYSTICK_PUSHED){
         	PWM_FREQUENCY(SPEAKER, 0);
         	PWM_SET_PULSE_WIDTH(SPEAKER, 0);
         	LCD_CLS();
@@ -53,23 +54,22 @@ int main() {
         LCD_LOCATE(0,10);
         LCD_PRINTF("Current temperature: %.1f", temp);
         LCD_LOCATE(0,20);
-		LCD_PRINTF("Modified temp: %.1f", temp + temp_send_modify(POT1_READ));*/
+		LCD_PRINTF("Modified temp: %.1f", temp + temp_send_modify(POT1_READ));
 
 
 
-        if(JOYSTICK_PUSHED){
+        if(JOYSTICK_LEFT){
         	LCD_CLS();
 			memset(buffer_temp, 0x00, sizeof(buffer_temp));
 			SERIAL_RECV(buffer_temp, 16);
 			float tempi;
 			int8_t _int_part = (int8_t)buffer_temp[0];
-			tempi = _int_part+ temp_recieve_modify(POT2_READ) + 0.5f * ((buffer_temp[1]&0x80)>>7);
+			tempi = _int_part + 0.5f * ((buffer_temp[1]&0x80)>>7);
 			LCD_LOCATE(0,0);
 			LCD_PRINTF("Received: %.1f", tempi);
-			LCD_LOCATE(0,12);
-			LCD_PRINTF("Received: %.1f", temp_recieve_modify(POT2_READ));
+			int limit = limit_modification(POT2_READ);
 
-			if(tempi < 10){
+			if(tempi < 10+limit){
 				PWM_SET_PULSE_WIDTH(LED_RED_SHIELD, 0);
 				PWM_SET_PULSE_WIDTH(LED_GREEN_SHIELD, 0);
 				PWM_SET_PULSE_WIDTH(LED_BLUE_SHIELD, 100);
@@ -78,7 +78,7 @@ int main() {
 			}
 
 
-			if(tempi >= 10 && tempi < 18){
+			if(tempi >= 10+limit && tempi < 18+limit){
 				PWM_SET_PULSE_WIDTH(LED_RED_SHIELD, 0);
 				PWM_SET_PULSE_WIDTH(LED_GREEN_SHIELD, 100);
 				PWM_SET_PULSE_WIDTH(LED_BLUE_SHIELD, 100);
@@ -86,7 +86,7 @@ int main() {
 				PWM_SET_PULSE_WIDTH(SPEAKER, 1);
 			}
 
-			if(tempi >= 18 && tempi < 26){
+			if(tempi >= 18+limit && tempi < 26+limit){
 				PWM_SET_PULSE_WIDTH(LED_RED_SHIELD, 0);
 				PWM_SET_PULSE_WIDTH(LED_GREEN_SHIELD, 100);
 				PWM_SET_PULSE_WIDTH(LED_BLUE_SHIELD, 0);
@@ -95,7 +95,7 @@ int main() {
 			}
 
 
-			if(tempi >= 26 && tempi < 34){
+			if(tempi >= 26+limit && tempi < 34+limit){
 				PWM_SET_PULSE_WIDTH(LED_RED_SHIELD, 100);
 				PWM_SET_PULSE_WIDTH(LED_GREEN_SHIELD, 100);
 				PWM_SET_PULSE_WIDTH(LED_BLUE_SHIELD, 0);
@@ -105,7 +105,7 @@ int main() {
 
 
 
-			if(tempi >= 34){
+			if(tempi >= 34+limit){
 				PWM_SET_PULSE_WIDTH(LED_RED_SHIELD, 100);
 				PWM_SET_PULSE_WIDTH(LED_GREEN_SHIELD, 0);
 				PWM_SET_PULSE_WIDTH(LED_BLUE_SHIELD, 0);
