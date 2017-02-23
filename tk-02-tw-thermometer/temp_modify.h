@@ -13,7 +13,7 @@ float temp_send_modify(float x){
 }
 
 float temp_recieve_modify(float x){
-	return (x-0.5)*10;
+	return (x/100)*50;
 }
 
 #endif /* CODECOOL_TEMP_MODIFY_H_ */
