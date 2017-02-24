@@ -10,6 +10,9 @@
 
 
 int limit_modification(float x){
+	if(x == 0.5){
+		return 0;
+	}
 	if(x>0.5 && x<0.66){
 		return 2;
 	}
@@ -28,7 +31,7 @@ int limit_modification(float x){
 	if(x<0.18){
 		return -6;
 	}
-
+	return 0;
 }
 
 
